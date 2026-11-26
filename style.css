@@ -1253,3 +1253,16 @@ h3 {
     transform: none;
   }
 }
+
+/* ---------- Textes justifiés ---------- */
+
+.about-copy p:not(.about-lead),
+.soft-card p,
+.offer-card p,
+.care-note,
+.contact-copy > p,
+.form-intro {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
