@@ -1266,3 +1266,11 @@ h3 {
   hyphens: auto;
   -webkit-hyphens: auto;
 }
+
+/* ---------- Bandeau du haut : même couleur que la citation du Dalaï-Lama ---------- */
+
+.topline {
+  padding: 9px 16px;
+  background: var(--rose);
+  color: rgb(255 255 255 / 88%);
+}
