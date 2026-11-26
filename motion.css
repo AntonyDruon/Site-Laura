@@ -1,0 +1,479 @@
+/* ==========================================================================
+   L'aura Hypnose — motion design
+   Ambiance : lent, respirant, organique. Tout est coupé si l'utilisateur
+   a demandé à réduire les animations (prefers-reduced-motion).
+   ========================================================================== */
+
+:root {
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- Intro « respiration » (une fois par visite) ---------- */
+
+.intro {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(255 255 255 / 70%), transparent 55%),
+    var(--blush);
+  cursor: pointer;
+  transition: opacity 900ms var(--ease-soft), visibility 900ms;
+}
+
+.intro.is-done {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.intro-stage {
+  position: relative;
+  display: grid;
+  width: min(70vw, 340px);
+  aspect-ratio: 1;
+  place-items: center;
+}
+
+.intro-breath,
+.intro-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.intro-breath {
+  background: radial-gradient(circle, rgb(227 191 184 / 75%), rgb(243 226 222 / 0%) 68%);
+  animation: intro-breathe 1700ms var(--ease-soft) both;
+}
+
+.intro-ring {
+  border: 1px solid rgb(128 78 78 / 28%);
+  animation: intro-ring 1700ms var(--ease-soft) both;
+}
+
+.intro-ring:nth-child(2) {
+  animation-delay: 160ms;
+}
+
+.intro-word {
+  position: relative;
+  color: var(--rose);
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 6vw, 2.5rem);
+  white-space: nowrap;
+}
+
+.intro-word span {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(10px);
+  animation: intro-letter 900ms var(--ease-out) forwards;
+  animation-delay: calc(260ms + var(--i) * 45ms);
+}
+
+.intro-hint {
+  position: absolute;
+  bottom: 9vh;
+  left: 0;
+  right: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-align: center;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fade-in 700ms 500ms forwards;
+}
+
+@keyframes intro-breathe {
+  0% { opacity: 0; transform: scale(0.35); }
+  60% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0.85; transform: scale(1); }
+}
+
+@keyframes intro-ring {
+  0% { opacity: 0; transform: scale(0.4); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.45); }
+}
+
+@keyframes intro-letter {
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
+}
+
+/* ---------- Voile entre les pages ---------- */
+
+.veil {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  background: var(--blush);
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 520ms var(--ease-soft);
+}
+
+.veil.is-hidden {
+  opacity: 0;
+}
+
+/* ---------- Barre de progression de lecture ---------- */
+
+.scroll-progress {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--blush-deep), var(--rose));
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+  pointer-events: none;
+}
+
+/* ---------- Aura vivante en fond des en-têtes ---------- */
+
+.hero,
+.page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.aura-field {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  /* s'efface vers le bas pour se raccorder sans trait à la vague */
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 96%);
+}
+
+.aura-blob {
+  position: absolute;
+  width: var(--s);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--c), transparent 68%);
+  filter: blur(8px);
+  opacity: 0.9;
+  animation: aura-drift var(--d) ease-in-out infinite alternate;
+}
+
+.aura-blob:nth-child(1) { --s: 46vmax; --c: rgb(255 255 255 / 70%); --d: 17s; top: -18%; left: -12%; }
+.aura-blob:nth-child(2) { --s: 38vmax; --c: rgb(227 191 184 / 55%); --d: 21s; bottom: -30%; right: -10%; animation-delay: -6s; }
+.aura-blob:nth-child(3) { --s: 26vmax; --c: rgb(209 221 207 / 35%); --d: 25s; top: 30%; left: 40%; animation-delay: -11s; }
+
+@keyframes aura-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(4vw, 3vh, 0) scale(1.12); }
+  100% { transform: translate3d(-3vw, -2vh, 0) scale(0.95); }
+}
+
+/* Halo qui suit doucement la souris (ordinateur) */
+.aura-cursor {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 250 247 / 75%), rgb(255 255 255 / 0%) 65%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(var(--mx, 50vw), var(--my, 50%), 0);
+  transition: opacity 600ms ease;
+}
+
+.hero.is-pointer .aura-cursor {
+  opacity: 1;
+}
+
+/* ---------- Titres révélés mot à mot ---------- */
+
+.split-ready .word {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(0.35em);
+  transition:
+    opacity 900ms var(--ease-out),
+    filter 900ms var(--ease-out),
+    transform 1000ms var(--ease-out);
+  transition-delay: calc(var(--w) * 90ms);
+}
+
+.split-ready.is-in .word {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+
+/* ---------- Portrait qui respire ---------- */
+
+.hero-portrait-frame {
+  animation: blob-breathe 12s ease-in-out infinite;
+}
+
+@keyframes blob-breathe {
+  0%, 100% { border-radius: 46% 54% 42% 58% / 52% 44% 56% 48%; }
+  33% { border-radius: 54% 46% 56% 44% / 46% 56% 44% 54%; }
+  66% { border-radius: 42% 58% 48% 52% / 56% 48% 52% 44%; }
+}
+
+.hero-portrait::before,
+.hero-portrait::after {
+  position: absolute;
+  z-index: -1;
+  inset: -22px;
+  border: 1px solid rgb(128 78 78 / 16%);
+  border-radius: 50%;
+  content: "";
+  animation: orbit 38s linear infinite;
+}
+
+.hero-portrait::after {
+  inset: -44px;
+  border-style: dashed;
+  border-color: rgb(128 78 78 / 12%);
+  animation-duration: 60s;
+  animation-direction: reverse;
+}
+
+.hero-portrait::before {
+  border-top-color: rgb(128 78 78 / 40%);
+}
+
+@keyframes orbit {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Vagues qui ondulent ---------- */
+
+.wave svg {
+  overflow: visible;
+}
+
+/* ---------- L'arbre pousse puis se balance ---------- */
+
+.tree-hang img {
+  transform-origin: 50% 0;
+}
+
+.motion-on .tree-hang img {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 2600ms var(--ease-soft);
+}
+
+.motion-on .tree-hang.is-grown img {
+  clip-path: inset(0 0 0 0);
+  animation: sway 9s ease-in-out 2600ms infinite;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(0.8deg); }
+}
+
+.petal {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: var(--size);
+  height: calc(var(--size) * 0.62);
+  opacity: 0;
+  animation: petal-fall var(--t) linear var(--delay) infinite;
+  pointer-events: none;
+}
+
+.petal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: petal-spin calc(var(--t) / 3) ease-in-out infinite alternate;
+}
+
+@keyframes petal-fall {
+  0% { opacity: 0; transform: translate3d(0, 0, 0); }
+  10% { opacity: 0.9; }
+  85% { opacity: 0.7; }
+  100% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0); }
+}
+
+@keyframes petal-spin {
+  from { transform: rotate(-35deg) rotateX(0deg); }
+  to { transform: rotate(40deg) rotateX(55deg); }
+}
+
+/* ---------- Citations qui s'illuminent au défilement ---------- */
+
+.glow-words .gw {
+  opacity: 0.22;
+  transition: opacity 400ms ease;
+}
+
+.glow-words .gw.is-lit {
+  opacity: 1;
+}
+
+/* ---------- Cartes : relief qui suit la souris ---------- */
+
+.tilt {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition: transform 500ms var(--ease-out), box-shadow 400ms ease;
+  will-change: transform;
+}
+
+.tilt.is-tilting {
+  --lift: -4px;
+  box-shadow: var(--shadow);
+  transition: transform 120ms linear, box-shadow 400ms ease;
+}
+
+.tilt::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgb(255 236 232 / 70%), transparent 60%);
+  mix-blend-mode: soft-light;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+
+.tilt.is-tilting::after {
+  opacity: 1;
+}
+
+.soft-card,
+.price-card {
+  position: relative;
+}
+
+/* ---------- Boutons : reflet + attraction magnétique ---------- */
+
+.button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.button::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: -60%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgb(255 255 255 / 28%), transparent);
+  content: "";
+  transform: skewX(-18deg);
+  transition: left 700ms var(--ease-out);
+}
+
+.button:hover::before {
+  left: 120%;
+}
+
+.magnetic {
+  transition: transform 450ms var(--ease-out), background 180ms ease, color 180ms ease;
+}
+
+/* ---------- Apparitions plus douces (remplace la version simple) ---------- */
+
+.motion-ready [data-reveal] {
+  filter: blur(6px);
+  transition:
+    opacity 900ms var(--ease-out),
+    transform 1000ms var(--ease-out),
+    filter 900ms var(--ease-out);
+}
+
+.motion-ready [data-reveal].is-visible {
+  filter: blur(0);
+}
+
+.stagger-in > li {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 600ms var(--ease-out), transform 700ms var(--ease-out);
+  transition-delay: calc(var(--n) * 55ms);
+}
+
+.stagger-in.is-in > li {
+  opacity: 1;
+  transform: none;
+}
+
+.support-list li::before {
+  box-shadow: 0 0 0 0 rgb(227 191 184 / 60%);
+}
+
+.stagger-in.is-in li::before {
+  animation: dot-pulse 2.6s ease-out calc(var(--n) * 55ms + 400ms) 1;
+}
+
+@keyframes dot-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(201 154 146 / 70%); }
+  100% { box-shadow: 0 0 0 10px rgb(201 154 146 / 0%); }
+}
+
+/* Icônes qui flottent légèrement */
+.icon-bubble {
+  animation: float 6s ease-in-out infinite;
+}
+
+.price-card:nth-child(2n) .icon-bubble,
+.offer-card:nth-child(2n) .icon-bubble {
+  animation-delay: -3s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* ---------- Accessibilité : on coupe tout ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .veil,
+  .aura-cursor,
+  .petal {
+    display: none !important;
+  }
+
+  .aura-blob,
+  .hero-portrait-frame,
+  .hero-portrait::before,
+  .hero-portrait::after,
+  .icon-bubble {
+    animation: none !important;
+  }
+
+  .split-ready .word,
+  .glow-words .gw,
+  .stagger-in > li {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  .motion-on .tree-hang img {
+    clip-path: none !important;
+    animation: none !important;
+  }
+}
